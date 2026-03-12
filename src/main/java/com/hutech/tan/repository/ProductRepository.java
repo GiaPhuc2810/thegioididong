@@ -1,0 +1,8 @@
+package com.hutech.tan.repository;
+
+import com.hutech.tan.model.Product; 
+import org.springframework.data.jpa.repository.JpaRepository; 
+import org.springframework.stereotype.Repository; 
+@Repository 
+public interface ProductRepository extends JpaRepository<Product, Long> { 
+} 

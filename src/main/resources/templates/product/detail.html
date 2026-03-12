@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="vi">
+<head>
+    <title th:text="${product.name} + ' - TGDD'">Chi tiet san pham - TGDD</title>
+    <th:block layout:fragment="head">
+    <style>
+        .detail-wrap { max-width: 900px; margin: 28px auto; padding: 0 12px; }
+
+        .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 14px; }
+        .breadcrumb a { color: #ffd400; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        .detail-card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+
+        .detail-body { display: grid; grid-template-columns: 320px 1fr; }
+
+        /* Cot anh */
+        .detail-img-col {
+            background: #f9fafb;
+            border-right: 1px solid #f0f0f0;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 28px 20px; gap: 14px;
+        }
+        .detail-img-main {
+            width: 100%; max-width: 280px; aspect-ratio: 1;
+            display: flex; align-items: center; justify-content: center;
+            background: #fff; border-radius: 12px; border: 1px solid #e4e7ec;
+            overflow: hidden;
+        }
+        .detail-img-main img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .detail-img-placeholder {
+            font-size: 80px; color: #d0d5dd;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; aspect-ratio: 1;
+        }
+
+        .badge-promo {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(90deg, #ff5722, #d0021c);
+            color: #fff; font-size: 13px; font-weight: 700;
+            padding: 6px 16px; border-radius: 20px;
+        }
+
+        /* Cot thong tin */
+        .detail-info-col { padding: 28px 28px; }
+
+        .detail-cat-tag {
+            display: inline-block; background: #f0f4ff; color: #3a6fd8;
+            font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .detail-name { font-size: 22px; font-weight: 800; color: #1d2939; line-height: 1.35; margin-bottom: 16px; }
+
+        .detail-price-box { background: #fff5f5; border-radius: 10px; padding: 14px 18px; margin-bottom: 18px; }
+        .detail-price-new { font-size: 28px; font-weight: 800; color: #d0021c; display: block; }
+        .detail-price-old { font-size: 14px; color: #98a2b3; text-decoration: line-through; margin-top: 2px; }
+        .detail-price-pct { display: inline-block; background: #d0021c; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+
+        .detail-meta { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .detail-meta-row { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .meta-label { color: #667085; font-weight: 500; min-width: 120px; }
+        .meta-value { color: #1d2939; font-weight: 600; }
+        .meta-value.in-stock { color: #2e7d32; }
+        .meta-value.out-stock { color: #c62828; }
+
+        .stock-bar { flex: 1; height: 8px; background: #e4e7ec; border-radius: 20px; overflow: hidden; }
+        .stock-bar-fill { height: 100%; background: linear-gradient(90deg, #43a047, #1b5e20); border-radius: 20px; }
+
+        .detail-desc { border-top: 1px solid #f2f4f7; padding-top: 18px; margin-top: 4px; }
+        .detail-desc h3 { font-size: 14px; font-weight: 700; color: #344054; margin-bottom: 8px; }
+        .detail-desc p { font-size: 14px; color: #667085; line-height: 1.65; white-space: pre-line; }
+        .no-desc { color: #98a2b3; font-style: italic; font-size: 13px; }
+
+        .detail-actions { display: flex; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px solid #f2f4f7; }
+        .btn-edit-detail {
+            flex: 2; background: linear-gradient(135deg, #d0021c, #a00015);
+            color: #fff; border: none; padding: 13px; border-radius: 8px;
+            font-size: 14px; font-weight: 700; text-decoration: none; text-align: center;
+            transition: opacity 0.2s;
+        }
+        .btn-edit-detail:hover { opacity: 0.9; }
+        .btn-back {
+            flex: 1; background: #f2f4f7; color: #344054;
+            border: 1.5px solid #d0d5dd; padding: 13px; border-radius: 8px;
+            font-size: 14px; font-weight: 600; text-decoration: none; text-align: center;
+        }
+        .btn-back:hover { background: #e4e7ec; }
+        .btn-delete-detail {
+            background: #fff0f0; color: #e74c3c;
+            border: 1.5px solid #ffc8c8; padding: 13px 18px; border-radius: 8px;
+            font-size: 14px; font-weight: 600; text-decoration: none; text-align: center;
+        }
+        .btn-delete-detail:hover { background: #ffe0e0; }
+
+        @media (max-width: 640px) {
+            .detail-body { grid-template-columns: 1fr; }
+            .detail-img-col { border-right: none; border-bottom: 1px solid #f0f0f0; }
+        }
+    </style>
+    </th:block>
+</head>
+<body>
+<section layout:fragment="content">
+
+<div class="detail-wrap">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a th:href="@{/product}">San pham</a>
+        <span>&#10095;</span>
+        <span th:text="${product.name}">Ten san pham</span>
+    </div>
+
+    <div class="detail-card">
+        <div class="detail-body">
+
+            <!-- Cot anh trai -->
+            <div class="detail-img-col">
+                <div class="detail-img-main">
+                    <img th:if="${product.image != null}"
+                         th:src="@{'/images/products/' + ${product.image}}"
+                         th:alt="${product.name}"
+                         onerror="this.parentElement.innerHTML='<div class=\'detail-img-placeholder\'>&#128241;</div>'">
+                    <div class="detail-img-placeholder" th:unless="${product.image != null}">&#128241;</div>
+                </div>
+
+                <!-- Badge khuyen mai -->
+                <div class="badge-promo" th:if="${product.promotion}">
+                    &#9889; Flash Sale dang dien ra
+                </div>
+
+                <!-- ID san pham -->
+                <div style="font-size:11px; color:#98a2b3;">
+                    Ma SP: #<span th:text="${product.id}">0</span>
+                </div>
+            </div>
+
+            <!-- Cot thong tin phai -->
+            <div class="detail-info-col">
+
+                <!-- Danh muc -->
+                <span class="detail-cat-tag"
+                      th:text="${product.category != null ? (product.category.icon != null and !product.category.icon.isEmpty() ? product.category.icon + ' ' : '') + product.category.name : 'Chua phan loai'}">
+                    Danh muc
+                </span>
+
+                <!-- Ten -->
+                <h1 class="detail-name" th:text="${product.name}">Ten san pham</h1>
+
+                <!-- Gia -->
+                <div class="detail-price-box">
+                    <span class="detail-price-new"
+                          th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' d'">
+                        0 d
+                    </span>
+                    <span th:if="${product.promotion}">
+                        <span class="detail-price-old"
+                              th:text="${#numbers.formatDecimal(product.price * 1.25, 0, 'COMMA', 0, 'POINT')} + ' d'"></span>
+                        <span class="detail-price-pct">-20%</span>
+                    </span>
+                </div>
+
+                <!-- Thong tin chi tiet -->
+                <div class="detail-meta">
+                    <div class="detail-meta-row">
+                        <span class="meta-label">&#128230; Danh muc</span>
+                        <span class="meta-value"
+                              th:text="${product.category != null ? product.category.name : 'Chua phan loai'}">
+                            Danh muc
+                        </span>
+                    </div>
+                    <div class="detail-meta-row">
+                        <span class="meta-label">&#128230; Ton kho</span>
+                        <span class="meta-value in-stock" th:if="${product.quantity > 0}"
+                              th:text="${product.quantity} + ' san pham'">0</span>
+                        <span class="meta-value out-stock" th:unless="${product.quantity > 0}">Het hang</span>
+                        <div class="stock-bar" th:if="${product.quantity > 0}">
+                            <div class="stock-bar-fill"
+                                 th:style="'width:' + (${product.quantity > 100 ? 100 : product.quantity}) + '%'"></div>
+                        </div>
+                    </div>
+                    <div class="detail-meta-row">
+                        <span class="meta-label">&#9889; Khuyen mai</span>
+                        <span class="meta-value in-stock" th:if="${product.promotion}">&#10003; Dang khuyen mai</span>
+                        <span class="meta-value" th:unless="${product.promotion}" style="color:#667085;">Khong</span>
+                    </div>
+                </div>
+
+                <!-- Mo ta -->
+                <div class="detail-desc">
+                    <h3>&#128221; Mo ta san pham</h3>
+                    <p th:if="${product.description != null and !product.description.isEmpty()}"
+                       th:text="${product.description}">Mo ta...</p>
+                    <p class="no-desc" th:if="${product.description == null or product.description.isEmpty()}">
+                        Chua co mo ta cho san pham nay.
+                    </p>
+                </div>
+
+                <!-- Buttons -->
+                <div class="detail-actions">
+                    <a th:href="@{'/product/edit/' + ${product.id}}" class="btn-edit-detail">&#9998; Chinh sua</a>
+                    <a th:href="@{/product}" class="btn-back">&#8592; Quay lai</a>
+                    <a th:href="@{'/product/delete/' + ${product.id}}"
+                       class="btn-delete-detail"
+                       onclick="return confirm('Xoa san pham nay?')">&#128465;</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</section>
+</body>
+</html>

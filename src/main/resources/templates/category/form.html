@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="vi">
+<head>
+    <title>Danh muc Form - TGDD</title>
+    <th:block layout:fragment="head">
+    <style>
+        .page-wrap { max-width: 540px; margin: 32px auto; padding: 0 12px; }
+
+        .form-card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+        .form-card-header {
+            background: linear-gradient(135deg, #d0021c 0%, #8b0000 100%);
+            padding: 20px 24px; display: flex; align-items: center; gap: 10px;
+        }
+        .form-card-header h2 { color: #fff; font-size: 18px; font-weight: 700; margin: 0; }
+        .form-body { padding: 24px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #344054; margin-bottom: 7px; }
+        .form-group label .req { color: #d0021c; margin-left: 2px; }
+        .form-control {
+            width: 100%; padding: 11px 14px;
+            border: 1.5px solid #d0d5dd; border-radius: 8px;
+            font-size: 14px; font-family: 'Inter', sans-serif; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-control:focus { border-color: #d0021c; box-shadow: 0 0 0 3px rgba(208,2,28,0.1); }
+        select.form-control {
+            appearance: none; cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23667085' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+        }
+        .err { color: #d0021c; font-size: 12px; margin-top: 4px; }
+
+        .parent-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #fff8e1; border: 1px solid #ffd400;
+            border-radius: 20px; padding: 5px 14px;
+            font-size: 13px; color: #7a5c00; font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        /* Icon picker */
+        .icon-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .icon-opt {
+            font-size: 24px; width: 44px; height: 44px;
+            border: 2px solid #e4e7ec; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: border-color 0.2s, background 0.2s;
+            user-select: none;
+        }
+        .icon-opt:hover { border-color: #d0021c; background: #fff5f5; }
+        .icon-opt.selected { border-color: #d0021c; background: #fff0f0; }
+
+        .icon-preview {
+            display: flex; align-items: center; gap: 10px;
+            background: #f9fafb; border: 1px solid #e4e7ec;
+            border-radius: 8px; padding: 10px 14px; margin-bottom: 10px;
+        }
+        .icon-preview span:first-child { font-size: 28px; }
+        .icon-preview span:last-child { font-size: 13px; color: #667085; }
+
+        .form-actions { display: flex; gap: 12px; margin-top: 8px; }
+        .btn-save {
+            flex: 2; background: linear-gradient(135deg, #d0021c 0%, #a00015 100%);
+            color: #fff; border: none; padding: 12px; border-radius: 8px;
+            font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        .btn-save:hover { opacity: 0.9; }
+        .btn-cancel {
+            flex: 1; background: #f2f4f7; color: #344054;
+            border: 1.5px solid #d0d5dd; padding: 12px; border-radius: 8px;
+            font-size: 15px; font-weight: 600; text-decoration: none; text-align: center;
+        }
+        .btn-cancel:hover { background: #e4e7ec; }
+    </style>
+    </th:block>
+</head>
+<body>
+<section layout:fragment="content">
+
+<div class="page-wrap">
+    <div class="form-card">
+        <div class="form-card-header">
+            <span style="font-size:24px;" th:text="${category.id == null ? '&#43;' : '&#9998;'}">+</span>
+            <h2 th:text="${category.id == null ? 'Them danh muc moi' : 'Cap nhat danh muc'}">Form</h2>
+        </div>
+        <div class="form-body">
+
+            <!-- Badge hien thi ten danh muc cha neu dang tao con -->
+            <div th:if="${selectedParentId != null}" class="parent-badge">
+                &#128193;
+                Danh muc con cua:
+                <strong th:each="root : ${rootCategories}"
+                        th:if="${root.id == selectedParentId}"
+                        th:text="${(root.icon != null and !root.icon.isEmpty() ? root.icon + ' ' : '') + root.name}">
+                </strong>
+            </div>
+
+            <form th:action="@{/categories/save}" th:object="${category}" method="post">
+                <input type="hidden" th:field="*{id}"/>
+
+                <!-- Chon loai: goc hay con -->
+                <div class="form-group">
+                    <label>Loai danh muc</label>
+                    <select class="form-control" name="parentId">
+                        <option value="">&#127968; Danh muc goc (cap cao nhat)</option>
+                        <option th:each="root : ${rootCategories}"
+                                th:value="${root.id}"
+                                th:text="${(root.icon != null and !root.icon.isEmpty() ? root.icon + ' ' : '') + root.name}"
+                                th:selected="${category.parent != null and category.parent.id.equals(root.id)}">
+                        </option>
+                    </select>
+                    <small style="color:#667085; font-size:11px; margin-top:4px; display:block;">
+                        Chon "Danh muc goc" neu la muc chinh (Dien thoai, Laptop...).
+                        Chon cha neu la muc con (Sac du phong thuoc Phu kien...).
+                    </small>
+                </div>
+
+                <!-- Ten danh muc -->
+                <div class="form-group">
+                    <label>Ten danh muc <span class="req">*</span></label>
+                    <input type="text" class="form-control" th:field="*{name}"
+                           placeholder="Vi du: Dien thoai, Sac du phong..." required>
+                    <div class="err" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+
+                <!-- Icon -->
+                <div class="form-group">
+                    <label>Icon danh muc</label>
+                    <div class="icon-preview" id="iconPreview">
+                        <span id="previewEmoji" th:text="${category.icon != null and !category.icon.isEmpty() ? category.icon : '&#128230;'}">&#128230;</span>
+                        <span>Icon hien thi tren menu</span>
+                    </div>
+                    <input type="hidden" id="iconInput" th:field="*{icon}">
+                    <div class="icon-picker">
+                        <div class="icon-opt" data-icon="&#128241;" title="Dien thoai">&#128241;</div>
+                        <div class="icon-opt" data-icon="&#128187;" title="Laptop">&#128187;</div>
+                        <div class="icon-opt" data-icon="&#128250;" title="Tivi">&#128250;</div>
+                        <div class="icon-opt" data-icon="&#127911;" title="Phu kien am thanh">&#127911;</div>
+                        <div class="icon-opt" data-icon="&#128247;" title="May anh">&#128247;</div>
+                        <div class="icon-opt" data-icon="&#8987;" title="Dong ho">&#8987;</div>
+                        <div class="icon-opt" data-icon="&#128757;" title="May tinh bang">&#128757;</div>
+                        <div class="icon-opt" data-icon="&#128171;" title="Sac pin">&#128171;</div>
+                        <div class="icon-opt" data-icon="&#128273;" title="Phu kien">&#128273;</div>
+                        <div class="icon-opt" data-icon="&#127918;" title="Gaming">&#127918;</div>
+                        <div class="icon-opt" data-icon="&#128736;" title="Cong cu">&#128736;</div>
+                        <div class="icon-opt" data-icon="&#128230;" title="Khac">&#128230;</div>
+                    </div>
+                    <small style="color:#667085; font-size:11px; margin-top:6px; display:block;">
+                        Chon icon hoac nhap emoji truc tiep vao o duoi:
+                    </small>
+                    <input type="text" class="form-control" id="iconText"
+                           th:value="${category.icon}"
+                           placeholder="Nhap emoji, vi du: 📱"
+                           style="margin-top:6px;"
+                           oninput="updateIcon(this.value)">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Luu danh muc</button>
+                    <a th:href="@{/categories}" class="btn-cancel">Huy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</section>
+<th:block layout:fragment="scripts">
+<script>
+    // Pre-select parent dropdown using JS (reliable for Long ID comparison)
+    const preselectedParentId = '[[${selectedParentId}]]';
+    if (preselectedParentId && preselectedParentId !== 'null') {
+        const sel = document.querySelector('select[name="parentId"]');
+        if (sel) sel.value = preselectedParentId;
+    }
+
+    const iconInput = document.getElementById('iconInput');
+    const iconText  = document.getElementById('iconText');
+    const preview   = document.getElementById('previewEmoji');
+
+    function updateIcon(val) {
+        iconInput.value = val;
+        preview.textContent = val || '📦';
+        document.querySelectorAll('.icon-opt').forEach(el => {
+            el.classList.toggle('selected', el.dataset.icon === val);
+        });
+    }
+
+    document.querySelectorAll('.icon-opt').forEach(el => {
+        el.addEventListener('click', () => {
+            const icon = el.dataset.icon;
+            iconInput.value = icon;
+            iconText.value  = icon;
+            preview.textContent = icon;
+            document.querySelectorAll('.icon-opt').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+        });
+    });
+
+    const current = iconInput.value;
+    if (current) {
+        document.querySelectorAll('.icon-opt').forEach(el => {
+            if (el.dataset.icon === current) el.classList.add('selected');
+        });
+    }
+</script>
+</th:block>
+</body>
+</html>

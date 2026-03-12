@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Form Sinh Viên</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: #fff;
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+        }
+        .navbar .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .navbar .nav-links {
+            display: flex;
+            gap: 30px;
+            font-size: 16px;
+        }
+        .navbar .nav-links a {
+            text-decoration: none;
+            color: #222;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .navbar .nav-links a.active {
+            color: #ff5722;
+        }
+        .navbar .nav-links a:hover {
+            color: #ff5722;
+        }
+        .navbar .auth {
+            display: flex;
+            gap: 10px;
+        }
+        .navbar .auth a {
+            text-decoration: none;
+            padding: 7px 18px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        .navbar .auth .register {
+            color: #222;
+            background: #fff;
+            border: 1px solid #ff5722;
+        }
+        .navbar .auth .login {
+            color: #fff;
+            background: #ff5722;
+            border: none;
+        }
+        .header-img {
+            width: 100vw;
+            height: 220px;
+            object-fit: cover;
+            position: relative;
+        }
+        .header-title {
+            position: absolute;
+            top: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #e53935;
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px #fff, 0 2px 8px #fff;
+        }
+        .center-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+        }
+        .form-box {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            padding: 32px 36px 28px 36px;
+            min-width: 350px;
+            max-width: 400px;
+        }
+        .form-box h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+        .form-group .error {
+            color: #e53935;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+        .form-box button {
+            width: 100%;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 0;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .form-box button:hover {
+            background: #1256a3;
+        }
+        @media (max-width: 600px) {
+            .form-box {
+                min-width: 90vw;
+                padding: 18px 8vw;
+            }
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            
+            <span style="font-size: 22px; font-weight: bold; color: #3f51b5;">Gotto</span>
+            <span style="font-size: 12px; color: #ff5722; margin-left: 6px;">ONLINE JOB PORTAL</span>
+        </div>
+        <div class="nav-links">
+            <a href=" " class="active">Trang chủ</a>
+            <a href="#">Trang sinh viên</a>
+            <a href="#">Pages</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="auth">
+            <a href="#" class="register">Register</a>
+            <a href="#" class="login">Login</a>
+        </div>
+    </div>
+    <div style="position: relative;">
+        <img class="header-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1500&q=80" alt="Header" />
+        <div class="header-title">QUẢN LÝ SINH VIÊN</div>
+    </div>
+    <div class="center-form">
+        <div class="form-box">
+            <h2>Form Sinh Viên</h2>
+            <form th:action="${index != null} ? @{'/sinhvien/edit/' + ${index}} : @{/sinhvien}" th:object="${sinhVien}" method="post">
+                <div class="form-group">
+                    <label for="ten">Tên sinh viên</label>
+                    <input id="ten" type="text" th:field="*{ten}" placeholder="Nhập tên sinh viên" />
+                    <div th:if="${#fields.hasErrors('ten')}" th:errors="*{ten}" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="tuoi">Tuổi</label>
+                    <input id="tuoi" type="number" min="0" th:field="*{tuoi}" placeholder="0" />
+                    <div th:if="${#fields.hasErrors('tuoi')}" th:errors="*{tuoi}" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="khoa">Khoa</label>
+                    <input id="khoa" type="text" th:field="*{khoa}" placeholder="Nhập khoa" />
+                    <div th:if="${#fields.hasErrors('khoa')}" th:errors="*{khoa}" class="error"></div>
+                </div>
+                <button type="submit">Lưu sinh viên</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

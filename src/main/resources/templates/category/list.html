@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="vi">
+<head>
+    <title>Quan ly Danh muc - TGDD</title>
+    <th:block layout:fragment="head">
+    <style>
+        .page-wrap { max-width: 960px; margin: 0 auto; padding: 24px 12px; }
+
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.7); padding: 12px 20px;
+            color: #fff; border-radius: 8px; margin-bottom: 20px;
+        }
+        .page-header h2 { font-size: 16px; font-weight: 600; }
+        .btn-add { background: #ffd400; color: #000; padding: 8px 18px; border-radius: 20px; text-decoration: none; font-weight: 700; font-size: 13px; white-space: nowrap; }
+        .btn-add:hover { background: #e6be00; }
+
+        /* Root category section */
+        .cat-section {
+            background: #fff; border-radius: 14px; margin-bottom: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15); overflow: hidden;
+        }
+        .cat-section-header {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #fff8f8 0%, #fff 100%);
+            border-bottom: 1px solid #f2f4f7;
+        }
+        .cat-section-icon { font-size: 30px; width: 40px; text-align: center; flex-shrink: 0; }
+        .cat-section-name { font-size: 16px; font-weight: 700; color: #1d2939; flex: 1; }
+        .cat-section-badge {
+            background: #e8f3ff; color: #2a83e9;
+            font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 10px;
+            white-space: nowrap;
+        }
+        .cat-section-actions { display: flex; gap: 6px; }
+        .btn-edit { font-size: 12px; text-decoration: none; padding: 5px 11px; border-radius: 6px; background: #e8f3ff; color: #2a83e9; font-weight: 600; }
+        .btn-edit:hover { background: #d0e8ff; }
+        .btn-del { font-size: 12px; text-decoration: none; padding: 5px 11px; border-radius: 6px; background: #fff0f0; color: #e74c3c; font-weight: 600; }
+        .btn-del:hover { background: #ffe0e0; }
+        .btn-add-child {
+            font-size: 12px; text-decoration: none; padding: 5px 11px; border-radius: 6px;
+            background: #f0fff4; color: #27ae60; font-weight: 600; border: 1px solid #b7ebc8;
+        }
+        .btn-add-child:hover { background: #dcf5e5; }
+
+        /* Children chips */
+        .cat-children { padding: 14px 20px 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .child-chip {
+            display: flex; align-items: center; gap: 7px;
+            background: #f9fafb; border: 1.5px solid #e4e7ec; border-radius: 30px;
+            padding: 6px 10px 6px 12px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .child-chip:hover { border-color: #d0021c; background: #fff5f5; }
+        .c-icon { font-size: 17px; }
+        .c-name { font-size: 13px; font-weight: 600; color: #344054; }
+        .child-chip-actions { display: flex; gap: 4px; margin-left: 6px; padding-left: 8px; border-left: 1px solid #e4e7ec; }
+        .child-chip-actions a { font-size: 11px; text-decoration: none; padding: 2px 7px; border-radius: 4px; }
+
+        .no-children { padding: 12px 20px 14px; color: #98a2b3; font-size: 13px; font-style: italic; }
+
+        .empty { text-align: center; padding: 50px; color: rgba(255,255,255,0.8); }
+        .empty-icon { font-size: 52px; margin-bottom: 12px; }
+    </style>
+    </th:block>
+</head>
+<body>
+<section layout:fragment="content">
+
+<div class="page-wrap">
+    <div class="page-header">
+        <h2>&#128193; QUAN LY DANH MUC SAN PHAM</h2>
+        <a th:href="@{/categories/create}" class="btn-add">&#43; Them danh muc goc</a>
+    </div>
+
+    <div th:if="${rootCategories != null and not #lists.isEmpty(rootCategories)}">
+        <div class="cat-section" th:each="root : ${rootCategories}">
+            <div class="cat-section-header">
+                <span class="cat-section-icon"
+                      th:text="${root.icon != null and !root.icon.isEmpty() ? root.icon : '📦'}">📦</span>
+                <span class="cat-section-name" th:text="${root.name}">Ten danh muc</span>
+                <span class="cat-section-badge"
+                      th:text="${#lists.size(root.children)} + ' danh muc con'">0 danh muc con</span>
+                <div class="cat-section-actions">
+                    <a class="btn-add-child"
+                       th:href="@{/categories/create(parentId=${root.id})}">&#43; Them con</a>
+                    <a class="btn-edit"
+                       th:href="@{/categories/edit/{id}(id=${root.id})}">&#9998; Sua</a>
+                    <a class="btn-del"
+                       th:href="@{/categories/delete/{id}(id=${root.id})}"
+                       onclick="return confirm('Xoa danh muc nay? Cac danh muc con cung se bi xoa!')">&#128465; Xoa</a>
+                </div>
+            </div>
+
+            <div class="cat-children" th:if="${not #lists.isEmpty(root.children)}">
+                <div class="child-chip" th:each="child : ${root.children}">
+                    <span class="c-icon"
+                          th:text="${child.icon != null and !child.icon.isEmpty() ? child.icon : '📦'}">📦</span>
+                    <span class="c-name" th:text="${child.name}">Ten con</span>
+                    <div class="child-chip-actions">
+                        <a class="btn-edit"
+                           th:href="@{/categories/edit/{id}(id=${child.id})}">&#9998;</a>
+                        <a class="btn-del"
+                           th:href="@{/categories/delete/{id}(id=${child.id})}"
+                           onclick="return confirm('Xoa danh muc con nay?')">&#128465;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="no-children" th:if="${#lists.isEmpty(root.children)}">
+                Chua co danh muc con &mdash;
+                <a th:href="@{/categories/create(parentId=${root.id})}"
+                   style="color:#27ae60; text-decoration:none; font-weight:600;">Them ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty" th:if="${rootCategories == null or #lists.isEmpty(rootCategories)}">
+        <div class="empty-icon">&#128230;</div>
+        <p>Chua co danh muc nao. Hay them moi!</p>
+        <a th:href="@{/categories/create}" class="btn-add" style="display:inline-block; margin-top:14px;">Them ngay</a>
+    </div>
+</div>
+
+</section>
+</body>
+</html>

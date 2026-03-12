@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách sinh viên</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Montserrat', Arial, sans-serif; background: #fff; }
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .navbar .logo { display: flex; align-items: center; }
+        .navbar .logo img { height: 40px; margin-right: 10px; }
+        .navbar .nav-links { display: flex; gap: 30px; font-size: 16px; }
+        .navbar .nav-links a { text-decoration: none; color: #222; font-weight: 500; transition: color 0.2s; }
+        .navbar .nav-links a.active { color: #ff5722; }
+        .navbar .nav-links a:hover { color: #ff5722; }
+        .navbar .auth { display: flex; gap: 10px; }
+        .navbar .auth a { text-decoration: none; padding: 7px 18px; border-radius: 20px; font-weight: 500; font-size: 15px; }
+        .navbar .auth .register { color: #222; background: #fff; border: 1px solid #ff5722; }
+        .navbar .auth .login { color: #fff; background: #ff5722; border: none; }
+        .container { max-width: 1000px; margin: 40px auto 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 32px 24px; }
+        .title { text-align: center; font-size: 2.1rem; font-weight: 700; margin-bottom: 30px; color: #512da8; }
+        .add-btn { display: block; margin: 0 0 24px auto; background: #1976d2; color: #fff; border: none; border-radius: 4px; padding: 10px 24px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-decoration: none; }
+        .add-btn:hover { background: #1256a3; }
+        table { border-collapse: collapse; width: 100%; margin: 0 auto; background: #fafaff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(124,77,255,0.06); }
+        th, td { border: 1px solid #ececec; padding: 12px 16px; text-align: center; font-size: 1rem; }
+        th { background: #7c4dff; color: #fff; font-size: 1.1rem; }
+        tr:nth-child(even) { background: #f2f2f2; }
+        .action-btn { margin: 0 4px; padding: 6px 18px; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500; text-decoration: none; display: inline-block; }
+        .edit-btn { background: #ff9800; color: #fff; }
+        .edit-btn:hover { background: #e65100; }
+        .delete-btn { background: #e53935; color: #fff; }
+        .delete-btn:hover { background: #b71c1c; }
+        @media (max-width: 900px) {
+            .container { padding: 12px 2vw; }
+            table { font-size: 0.95rem; }
+        }
+        @media (max-width: 600px) {
+            .navbar { flex-direction: column; gap: 10px; padding: 10px 10px; }
+            .container { padding: 8px 0; }
+            th, td { padding: 8px 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <span style="font-size: 22px; font-weight: bold; color: #3f51b5;">Gotto</span>
+            <span style="font-size: 12px; color: #ff5722; margin-left: 6px;">ONLINE JOB PORTAL</span>
+        </div>
+        <div class="nav-links">
+            <a th:href="@{/}" >Trang chủ</a>
+            <a th:href="@{/sinhvien}" >Trang sinh viên</a>
+            <a href="#">Pages</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="auth">
+            <a href="#" class="register">Register</a>
+            <a href="#" class="login">Login</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="title">Danh sách sinh viên</div>
+        <a th:href="@{/sinhvien}" class="add-btn">Thêm sinh viên</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên</th>
+                    <th>Tuổi</th>
+                    <th>Khoa</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="sv,iterStat : ${dsSinhVien}">
+                    <td th:text="${iterStat.index + 1}"></td>
+                    <td th:text="${sv.ten}"></td>
+                    <td th:text="${sv.tuoi}"></td>
+                    <td th:text="${sv.khoa}"></td>
+                    <td>
+                        <a th:href="@{'/sinhvien/edit/' + ${iterStat.index}}" class="action-btn edit-btn">Sửa</a>
+                        <a th:href="@{'/sinhvien/delete/' + ${iterStat.index}}" class="action-btn delete-btn" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

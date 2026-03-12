@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="vi">
+<head>
+    <title>San pham - TGDD</title>
+    <th:block layout:fragment="head">
+    <style>
+        /* OUTER LAYOUT: banner trai | content | banner phai */
+        .outer-wrap {
+            max-width: 1480px;
+            margin: 0 auto;
+            padding: 18px 12px;
+            display: grid;
+            grid-template-columns: 160px 1fr 160px;
+            gap: 14px;
+            align-items: start;
+        }
+
+        /* SIDE BANNERS */
+        .side-banner { display: flex; flex-direction: column; align-items: center; position: sticky; top: 106px; padding-top: 8px; }
+        .banner-card {
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none; display: block; line-height: 0;
+        }
+        .banner-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+        .banner-card img { width: 160px; display: block; border-radius: 12px; }
+
+        /* MAIN CONTENT */
+        .page-wrap { min-width: 0; }
+        .admin-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.7); padding: 10px 18px; color: #fff; border-radius: 8px; margin-bottom: 16px; }
+        .admin-bar span { font-size: 14px; font-weight: 600; }
+        .btn-add { background: #ffd400; color: #000; padding: 8px 18px; border-radius: 20px; text-decoration: none; font-weight: 700; font-size: 13px; }
+        .btn-add:hover { background: #e6be00; }
+
+        /* FLASH SALE */
+        .section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 0 4px; }
+        .section-label img { height: 30px; }
+        .section-label h2 { font-size: 24px; font-weight: 800; color: #ffe818; text-transform: uppercase; font-style: italic; margin: 0; }
+        .section-label .countdown { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+        .cd-label { color: #fff; font-size: 12px; margin-right: 4px; }
+        .cd-box { background: #1a1a1a; color: #ffd400; font-size: 16px; font-weight: 700; padding: 3px 7px; border-radius: 4px; min-width: 32px; text-align: center; }
+        .cd-sep { color: #fff; font-size: 16px; font-weight: 700; }
+        .promo-block { background: linear-gradient(135deg, #ff4e50 0%, #c60004 100%); border-radius: 14px; padding: 16px; box-shadow: 0 6px 20px rgba(198,0,4,0.35); margin-bottom: 20px; }
+
+        /* NORMAL PRODUCTS */
+        .normal-block { background: rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; }
+        .normal-label { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+        .normal-label h2 { font-size: 18px; font-weight: 700; color: #fff; text-transform: uppercase; margin: 0; }
+        .normal-label .count { background: rgba(255,255,255,0.2); color: #fff; font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+
+        /* PRODUCT GRID */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 10px; }
+        .p-item { background: #fff; border-radius: 10px; padding: 12px 12px 14px; position: relative; display: flex; flex-direction: column; transition: transform 0.25s, box-shadow 0.25s; }
+        .p-item:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+        .lbl-promo { position: absolute; top: 10px; left: 10px; background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; z-index: 3; }
+        .lbl-sale { position: absolute; top: 10px; right: 10px; background: #ffebee; color: #d0021c; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+        .item-img { height: 150px; display: flex; align-items: center; justify-content: center; margin: 6px 0 10px; }
+        .item-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .cat-tag { display: inline-block; background: #f0f4ff; color: #3a6fd8; font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-bottom: 5px; }
+        .item-name { font-size: 13px; color: #1d2939; line-height: 1.45; height: 38px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 8px; }
+        .price-new { color: #e83a45; font-size: 17px; font-weight: 700; display: block; margin-bottom: 3px; }
+        .price-row2 { display: flex; align-items: center; gap: 6px; }
+        .price-old { color: #98a2b3; text-decoration: line-through; font-size: 12px; }
+        .pct { background: #fff3f3; color: #d0021c; font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 3px; }
+        .fs-bar { margin-top: 8px; height: 18px; background: #f0f0f0; border-radius: 20px; overflow: hidden; position: relative; text-align: center; }
+        .fs-bar-fill { position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(90deg, #ffecb3, #ffb200); border-radius: 20px; }
+        .fs-bar-txt { position: relative; z-index: 2; font-size: 10px; line-height: 18px; font-weight: 600; color: #333; }
+        .item-link { display: block; text-decoration: none; }
+        .item-link .item-img img { transition: transform 0.25s; }
+        .item-link:hover .item-img img { transform: scale(1.06); }
+        .item-name-link { text-decoration: none; }
+        .item-name-link:hover .item-name { color: #d0021c; }
+        .item-actions { margin-top: 12px; padding-top: 10px; border-top: 1px solid #f1f1f1; display: flex; justify-content: space-between; }
+        .item-actions a { font-size: 12px; text-decoration: none; padding: 4px 10px; border-radius: 4px; transition: background 0.2s; }
+        .btn-e { color: #2a83e9; background: #e8f3ff; }
+        .btn-e:hover { background: #d0e8ff; }
+        .btn-d { color: #e74c3c; background: #fff0f0; }
+        .btn-d:hover { background: #ffe0e0; }
+
+        .empty { text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.8); }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+        /* Responsive: an banner khi man hinh nho */
+        @media (max-width: 1100px) {
+            .outer-wrap { grid-template-columns: 140px 1fr 140px; }
+        }
+        @media (max-width: 900px) {
+            .outer-wrap { grid-template-columns: 1fr; }
+            .side-banner { display: none; }
+        }
+    </style>
+    </th:block>
+</head>
+<body>
+<section layout:fragment="content">
+
+<div class="outer-wrap">
+
+    <!-- BANNER TRAI -->
+    <aside class="side-banner">
+        <a href="#" class="banner-card">
+            <img src="/images/banners/banner-left.jpg" alt="Banner trai" width="160">
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="page-wrap">
+
+        <!-- Admin bar -->
+        <div class="admin-bar">
+            <span>&#128218; QUAN LY SAN PHAM</span>
+            <a th:href="@{/product/create}" class="btn-add">&#43; Them san pham</a>
+        </div>
+
+        <!-- FLASH SALE -->
+        <div class="promo-block" th:if="${products != null and not #lists.isEmpty(products.?[promotion])}">
+            <div class="section-label">
+                <img src="https://cdnv2.tgdd.vn/webmwg/2024/ContentMwg/images/homev2/flash-sale.png"
+                     onerror="this.style.display='none'" alt="">
+                <h2>Khuyen Mai / Flash Sale</h2>
+                <div class="countdown">
+                    <span class="cd-label">Ket thuc:</span>
+                    <span class="cd-box" id="cdH">00</span>
+                    <span class="cd-sep">:</span>
+                    <span class="cd-box" id="cdM">00</span>
+                    <span class="cd-sep">:</span>
+                    <span class="cd-box" id="cdS">00</span>
+                </div>
+            </div>
+            <div class="product-grid">
+                <div class="p-item" th:each="p : ${products}" th:if="${p.promotion}">
+                    <span class="lbl-promo">KHUYEN MAI</span>
+                    <span class="lbl-sale">-20%</span>
+                    <a th:href="@{'/product/' + ${p.id}}" class="item-link">
+                        <div class="item-img">
+                            <img th:if="${p.image != null}" th:src="@{'/images/products/' + ${p.image}}" th:alt="${p.name}">
+                            <img th:unless="${p.image != null}" src="https://via.placeholder.com/160x160?text=SP" alt="">
+                        </div>
+                    </a>
+                    <span class="cat-tag" th:text="${p.category != null ? p.category.name : 'Khac'}">Cat</span>
+                    <a th:href="@{'/product/' + ${p.id}}" class="item-name-link">
+                        <p class="item-name" th:text="${p.name}">Ten SP</p>
+                    </a>
+                    <span class="price-new" th:text="${#numbers.formatDecimal(p.price,0,'COMMA',0,'POINT')} + ' d'">0 d</span>
+                    <div class="price-row2">
+                        <span class="price-old" th:text="${#numbers.formatDecimal(p.price*1.25,0,'COMMA',0,'POINT')} + ' d'"></span>
+                        <span class="pct">-20%</span>
+                    </div>
+                    <div class="fs-bar">
+                        <div class="fs-bar-fill" style="width:65%;"></div>
+                        <span class="fs-bar-txt" th:text="'Con ' + ${p.quantity} + ' sp'">...</span>
+                    </div>
+                    <div class="item-actions">
+                        <a class="btn-e" th:href="@{'/product/edit/' + ${p.id}}">&#9998; Sua</a>
+                        <a class="btn-d" th:href="@{'/product/delete/' + ${p.id}}"
+                           onclick="return confirm('Xoa san pham?')">&#128465; Xoa</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAT CA SAN PHAM -->
+        <div class="normal-block" th:if="${products != null and not #lists.isEmpty(products)}">
+            <div class="normal-label">
+                <h2>&#128241; Tat ca san pham</h2>
+                <span class="count" th:text="${#lists.size(products)} + ' san pham'">0</span>
+            </div>
+            <div class="product-grid">
+                <div class="p-item" th:each="p : ${products}">
+                    <span class="lbl-promo" th:if="${p.promotion}">KHUYEN MAI</span>
+                    <a th:href="@{'/product/' + ${p.id}}" class="item-link">
+                        <div class="item-img">
+                            <img th:if="${p.image != null}" th:src="@{'/images/products/' + ${p.image}}" th:alt="${p.name}">
+                            <img th:unless="${p.image != null}" src="https://via.placeholder.com/160x160?text=SP" alt="">
+                        </div>
+                    </a>
+                    <span class="cat-tag" th:text="${p.category != null ? p.category.name : 'Khac'}">Cat</span>
+                    <a th:href="@{'/product/' + ${p.id}}" class="item-name-link">
+                        <p class="item-name" th:text="${p.name}">Ten SP</p>
+                    </a>
+                    <span class="price-new" th:text="${#numbers.formatDecimal(p.price,0,'COMMA',0,'POINT')} + ' d'">0 d</span>
+                    <div class="price-row2">
+                        <span class="price-old" th:text="${#numbers.formatDecimal(p.price*1.25,0,'COMMA',0,'POINT')} + ' d'"></span>
+                        <span class="pct">-20%</span>
+                    </div>
+                    <div class="fs-bar">
+                        <div class="fs-bar-fill" style="width:65%;"></div>
+                        <span class="fs-bar-txt" th:text="'Con ' + ${p.quantity} + ' sp'">...</span>
+                    </div>
+                    <div class="item-actions">
+                        <a class="btn-e" th:href="@{'/product/edit/' + ${p.id}}">&#9998; Sua</a>
+                        <a class="btn-d" th:href="@{'/product/delete/' + ${p.id}}"
+                           onclick="return confirm('Xoa san pham?')">&#128465; Xoa</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty -->
+        <div class="empty" th:if="${products == null or #lists.isEmpty(products)}">
+            <div class="empty-icon">&#128230;</div>
+            <p>Chua co san pham nao. Them san pham dau tien!</p>
+            <a th:href="@{/product/create}" class="btn-add" style="display:inline-block; margin-top:12px;">Them ngay</a>
+        </div>
+
+    </div>
+
+    <!-- BANNER PHAI -->
+    <aside class="side-banner">
+        <a href="#" class="banner-card">
+            <img src="/images/banners/banner-right.jpg" alt="Banner phai" width="160">
+        </a>
+    </aside>
+
+</div>
+
+</section>
+<th:block layout:fragment="scripts">
+<script>
+    function tick() {
+        const now = new Date(), end = new Date();
+        end.setHours(23, 59, 59, 0);
+        const s = Math.max(0, Math.floor((end - now) / 1000));
+        const h = document.getElementById('cdH');
+        const m = document.getElementById('cdM');
+        const sec = document.getElementById('cdS');
+        if (h) h.textContent = String(Math.floor(s/3600)).padStart(2,'0');
+        if (m) m.textContent = String(Math.floor(s%3600/60)).padStart(2,'0');
+        if (sec) sec.textContent = String(s%60).padStart(2,'0');
+    }
+    tick(); setInterval(tick, 1000);
+</script>
+</th:block>
+</body>
+</html>

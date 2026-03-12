@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="vi">
+<head>
+    <title>Them / Cap nhat San pham - TGDD</title>
+    <th:block layout:fragment="head">
+    <style>
+        /* FORM */
+        .form-wrapper { max-width: 640px; margin: 28px auto; padding: 0 12px; }
+
+        .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 14px; }
+        .breadcrumb a { color: #ffd400; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        .form-card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+
+        .form-card-header {
+            background: linear-gradient(135deg, #d0021c 0%, #8b0000 100%);
+            padding: 20px 26px; display: flex; align-items: center; gap: 12px;
+        }
+        .form-card-header .h-icon { font-size: 26px; }
+        .form-card-header h2 { color: #fff; font-size: 19px; font-weight: 700; margin: 0; text-transform: uppercase; }
+        .form-card-header .h-badge {
+            margin-left: auto; background: rgba(255,255,255,0.15); color: #ffd400;
+            font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px;
+            border: 1px solid rgba(255,212,0,0.4);
+        }
+
+        .form-body { padding: 26px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #344054; margin-bottom: 7px; }
+        .form-group label .req { color: #d0021c; margin-left: 2px; }
+
+        .form-control {
+            width: 100%; padding: 11px 14px;
+            border: 1.5px solid #d0d5dd; border-radius: 8px;
+            font-size: 14px; font-family: 'Inter', sans-serif; color: #101828;
+            transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+        }
+        .form-control:focus { border-color: #d0021c; box-shadow: 0 0 0 3px rgba(208,2,28,0.1); }
+        .form-control::placeholder { color: #98a2b3; }
+        textarea.form-control { resize: vertical; min-height: 90px; }
+        select.form-control {
+            appearance: none; cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23667085' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        /* Khuyen mai checkbox */
+        .promo-box {
+            background: #fff8e1; border: 1.5px solid #ffd400; border-radius: 10px; padding: 14px 16px;
+        }
+        .promo-box label { display: flex; align-items: center; gap: 12px; cursor: pointer; margin: 0; }
+        .promo-box input[type="checkbox"] { width: 20px; height: 20px; accent-color: #d0021c; cursor: pointer; flex-shrink: 0; }
+        .promo-box .promo-title { color: #d0021c; font-size: 15px; font-weight: 700; display: block; }
+        .promo-box .promo-desc { color: #667085; font-size: 12px; font-weight: 400; display: block; margin-top: 2px; }
+
+        /* File upload */
+        .file-upload-area {
+            border: 2px dashed #d0d5dd; border-radius: 8px; padding: 20px;
+            text-align: center; cursor: pointer; background: #f9fafb;
+            position: relative; transition: border-color 0.2s, background 0.2s;
+        }
+        .file-upload-area:hover { border-color: #d0021c; background: #fff5f5; }
+        .file-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+        .upload-icon { font-size: 30px; margin-bottom: 6px; }
+        .upload-text { font-size: 13px; color: #667085; }
+        .upload-text b { color: #d0021c; }
+
+        .img-preview-box { margin-top: 12px; padding: 10px 14px; background: #f9fafb; border: 1px solid #eee; border-radius: 8px; display: flex; align-items: center; gap: 12px; }
+        .img-preview-box img { width: 72px; height: 72px; object-fit: contain; border-radius: 6px; border: 1px solid #e4e7ec; }
+        .img-preview-info { font-size: 12px; color: #667085; }
+        .img-preview-info b { display: block; color: #344054; font-size: 13px; margin-bottom: 2px; }
+
+        .form-divider { border: none; border-top: 1px solid #f2f4f7; margin: 20px 0; }
+
+        /* Buttons */
+        .form-actions { display: flex; gap: 12px; margin-top: 6px; }
+        .btn-save {
+            flex: 2; background: linear-gradient(135deg, #d0021c 0%, #a00015 100%);
+            color: #fff; border: none; padding: 13px; border-radius: 8px;
+            font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif;
+            transition: opacity 0.2s;
+        }
+        .btn-save:hover { opacity: 0.9; }
+        .btn-cancel {
+            flex: 1; background: #f2f4f7; color: #344054;
+            border: 1.5px solid #d0d5dd; padding: 13px; border-radius: 8px;
+            font-size: 15px; font-weight: 600; text-decoration: none; text-align: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-cancel:hover { background: #e4e7ec; }
+    </style>
+    </th:block>
+</head>
+<body>
+<section layout:fragment="content">
+
+<div class="form-wrapper">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a th:href="@{/product}">San pham</a>
+        <span>&#10095;</span>
+        <span th:text="${product.id == null ? 'Them moi' : 'Cap nhat #' + product.id}">Them moi</span>
+    </div>
+
+    <div class="form-card">
+        <div class="form-card-header">
+            <span class="h-icon" th:text="${product.id == null ? '&#43;' : '&#9998;'}">+</span>
+            <h2 th:text="${product.id == null ? 'Them san pham moi' : 'Cap nhat san pham'}">Form</h2>
+            <span class="h-badge" th:text="${product.id == null ? 'NEW' : 'EDIT #' + product.id}">NEW</span>
+        </div>
+
+        <div class="form-body">
+            <form th:action="@{/product/save}"
+                  th:object="${product}"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <input type="hidden" th:field="*{id}"/>
+
+                <!-- Ten -->
+                <div class="form-group">
+                    <label>Ten san pham <span class="req">*</span></label>
+                    <input type="text" class="form-control" th:field="*{name}"
+                           placeholder="Vi du: iPhone 16 Pro Max 256GB..." required>
+                </div>
+
+                <!-- Gia + So luong -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Gia ban (d) <span class="req">*</span></label>
+                        <input type="number" class="form-control" th:field="*{price}"
+                               placeholder="0" min="0" step="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>So luong kho <span class="req">*</span></label>
+                        <input type="number" class="form-control" th:field="*{quantity}"
+                               placeholder="0" min="0" required>
+                    </div>
+                </div>
+
+                <!-- Danh muc -->
+                <div class="form-group">
+                    <label>Danh muc <span class="req">*</span></label>
+                    <select class="form-control" name="categoryId">
+                        <option value="">-- Chon danh muc --</option>
+                        <option th:each="cat : ${categories}"
+                                th:value="${cat.id}"
+                                th:text="${(cat.icon != null and !cat.icon.isEmpty() ? cat.icon + ' ' : '') + cat.name}"
+                                th:selected="${product.category != null and product.category.id == cat.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Mo ta -->
+                <div class="form-group">
+                    <label>Mo ta san pham</label>
+                    <textarea class="form-control" th:field="*{description}" rows="3"
+                              placeholder="Nhap thong so ky thuat, uu diem..."></textarea>
+                </div>
+
+                <!-- Khuyen mai -->
+                <div class="form-group promo-box">
+                    <label>
+                        <input type="checkbox" th:field="*{promotion}">
+                        <span>
+                            <span class="promo-title">&#128293; San pham khuyen mai (Flash Sale)</span>
+                            <span class="promo-desc">Tich vao de hien thi san pham nay trong khoi Flash Sale tren trang chu</span>
+                        </span>
+                    </label>
+                </div>
+
+                <hr class="form-divider">
+
+                <!-- Anh -->
+                <div class="form-group">
+                    <label>Hinh anh san pham</label>
+                    <div class="file-upload-area" id="uploadArea">
+                        <input type="file" name="imageFile" accept="image/*" id="imageFile"
+                               onchange="previewImage(this)">
+                        <div class="upload-icon">&#128247;</div>
+                        <div class="upload-text">
+                            <b>Nhan de chon anh</b> hoac keo tha vao day<br>
+                            <span style="font-size:11px;">PNG, JPG, WEBP - Toi da 5MB</span>
+                        </div>
+                    </div>
+
+                    <!-- Anh hien tai (khi edit) -->
+                    <div class="img-preview-box" th:if="${product.image != null}" id="currentPreview">
+                        <img th:src="@{'/images/products/' + ${product.image}}"
+                             th:alt="${product.name}"
+                             onerror="this.src='https://via.placeholder.com/72'">
+                        <div class="img-preview-info">
+                            <b>Anh hien tai:</b>
+                            <span th:text="${product.image}">ten-anh.jpg</span>
+                        </div>
+                    </div>
+
+                    <!-- Preview anh moi -->
+                    <div class="img-preview-box" id="newPreview" style="display:none;">
+                        <img id="previewImg" src="" alt="Preview">
+                        <div class="img-preview-info">
+                            <b>Anh moi chon:</b>
+                            <span id="previewName"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">&#128190; Luu san pham</button>
+                    <a th:href="@{/product}" class="btn-cancel">Huy bo</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</section>
+<th:block layout:fragment="scripts">
+<script>
+    function previewImage(input) {
+        const newPreview = document.getElementById('newPreview');
+        const currentPreview = document.getElementById('currentPreview');
+        const previewImg = document.getElementById('previewImg');
+        const previewName = document.getElementById('previewName');
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = e => {
+                previewImg.src = e.target.result;
+                previewName.textContent = file.name;
+                newPreview.style.display = 'flex';
+                if (currentPreview) currentPreview.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Drag highlight
+    const area = document.getElementById('uploadArea');
+    if (area) {
+        area.addEventListener('dragover', e => { e.preventDefault(); area.style.borderColor='#d0021c'; area.style.background='#fff5f5'; });
+        area.addEventListener('dragleave', () => { area.style.borderColor='#d0d5dd'; area.style.background='#f9fafb'; });
+        area.addEventListener('drop', () => { area.style.borderColor='#d0d5dd'; area.style.background='#f9fafb'; });
+    }
+</script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,119 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #b80000;
+}
+
+/* HEADER */
+.header {
+    background: #ffd400;
+}
+
+.header-top {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.search {
+    flex: 1;
+    margin: 0 20px;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+}
+
+.header-right span {
+    margin-left: 15px;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.menu a {
+    margin: 0 12px;
+    font-weight: bold;
+}
+
+/* BANNER */
+.banner {
+    height: 300px;
+    background: linear-gradient(to right, #d40000, #b80000);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-content {
+    text-align: center;
+}
+
+/* SECTION */
+.section {
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.white {
+    background: white;
+}
+
+.red {
+    background: #fff;
+}
+
+/* TIME BOX */
+.time-box {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.time-box div {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.time-box .active {
+    background: red;
+    color: white;
+}
+
+/* PRODUCT GRID */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.product-card {
+    height: 280px;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+}
+
+/* EMPTY BOX */
+.product-box.empty {
+    height: 120px;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+}

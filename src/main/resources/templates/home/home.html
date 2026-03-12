@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gotto - Online Job Portal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Montserrat', Arial, sans-serif; background: #fff; }
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .navbar .logo { display: flex; align-items: center; }
+        .navbar .logo img { height: 40px; margin-right: 10px; }
+        .navbar .nav-links { display: flex; gap: 30px; font-size: 16px; }
+        .navbar .nav-links a { text-decoration: none; color: #222; font-weight: 500; transition: color 0.2s; }
+        .navbar .nav-links a.active { color: #ff5722; }
+        .navbar .nav-links a:hover { color: #ff5722; }
+        .navbar .auth { display: flex; gap: 10px; }
+        .navbar .auth a { text-decoration: none; padding: 7px 18px; border-radius: 20px; font-weight: 500; font-size: 15px; }
+        .navbar .auth .register { color: #222; background: #fff; border: 1px solid #ff5722; }
+        .navbar .auth .login { color: #fff; background: #ff5722; border: none; }
+        .hero-section { position: relative; background: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1500&q=80') center/cover no-repeat; min-height: 420px; display: flex; align-items: center; justify-content: center; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(80, 36, 180, 0.7); z-index: 1; }
+        .hero-content { position: relative; z-index: 2; color: #fff; display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; max-width: 1200px; margin: 0 auto; }
+        .hero-left { flex: 1; padding: 40px 0 40px 40px; }
+        .hero-left h2 { font-size: 1.2rem; font-weight: 400; margin-bottom: 10px; }
+        .hero-left h1 { font-size: 2.8rem; font-weight: 700; margin: 0 0 18px 0; line-height: 1.1; }
+        .hero-left .browse-btn { background: none; border: 2px solid #00bcd4; color: #00bcd4; padding: 8px 24px; border-radius: 24px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 18px; transition: background 0.2s, color 0.2s; }
+        .hero-left .browse-btn:hover { background: #00bcd4; color: #fff; }
+        .hero-right { flex: 1; display: flex; align-items: center; justify-content: center; }
+        .search-box { background: #7c4dff; border-radius: 16px; padding: 32px 28px 24px 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); min-width: 340px; max-width: 400px; }
+        .search-box h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 18px; color: #fff; }
+        .search-fields { display: flex; gap: 10px; margin-bottom: 16px; }
+        .search-fields input { flex: 1; padding: 10px 12px; border-radius: 6px; border: none; font-size: 15px; }
+        .find-btn { width: 100%; background: #512da8; color: #fff; border: none; border-radius: 6px; padding: 12px 0; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        .find-btn:hover { background: #311b92; }
+        .popular-keywords { margin-top: 12px; }
+        .popular-keywords span { background: #fff; color: #7c4dff; border-radius: 12px; padding: 4px 14px; margin-right: 8px; font-size: 0.95rem; font-weight: 500; display: inline-block; margin-bottom: 4px; }
+        .categories-section { background: #fff; padding: 48px 0 32px 0; }
+        .categories-title { text-align: center; font-size: 2.1rem; font-weight: 700; margin-bottom: 36px; color: #222; }
+        .categories-list { display: flex; justify-content: center; gap: 36px; flex-wrap: wrap; }
+        .category-item { background: #7c4dff; color: #fff; border-radius: 50%; width: 120px; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(124,77,255,0.10); position: relative; margin-bottom: 18px; }
+        .category-item .icon { font-size: 2.2rem; margin-bottom: 8px; }
+        .category-item .count { position: absolute; top: 12px; right: 18px; background: #00bcd4; color: #fff; border-radius: 50%; padding: 2px 10px; font-size: 0.95rem; font-weight: 700; }
+        .category-item .label { font-size: 1.1rem; font-weight: 500; }
+        @media (max-width: 900px) {
+            .hero-content { flex-direction: column; padding: 0 10px; }
+            .hero-left, .hero-right { padding: 0; }
+        }
+        @media (max-width: 600px) {
+            .navbar { flex-direction: column; gap: 10px; padding: 10px 10px; }
+            .hero-section { min-height: 520px; }
+            .categories-list { flex-direction: column; align-items: center; gap: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            
+            <span style="font-size: 22px; font-weight: bold; color: #3f51b5;">Gotto</span>
+            <span style="font-size: 12px; color: #ff5722; margin-left: 6px;">ONLINE JOB PORTAL</span>
+        </div>
+        <div class="nav-links">
+            <a href=" " class="active">Trang chủ</a>
+            <a th:href="@{/sinhvien}">Trang sinh viên</a>
+            <a href="#">Pages</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="auth">
+            <a href="#" class="register">Register</a>
+            <a href="#" class="login">Login</a>
+        </div>
+    </div>
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-left">
+                <h2>Are you looking for your dream job?</h2>
+                <h1>Online Platform.<br>Best Job portal</h1>
+                <button class="browse-btn">Browse Categories</button>
+            </div>
+            <div class="hero-right">
+                <div class="search-box">
+                    <h3>Search your dream job</h3>
+                    <div class="search-fields">
+                        <input type="text" placeholder="Job Title" />
+                        <input type="text" placeholder="Location" />
+                    </div>
+                    <button class="find-btn">Find a job</button>
+                    <div class="popular-keywords">
+                        <span>Web design</span>
+                        <span>Marketing</span>
+                        <span>Customer support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="categories-section">
+        <div class="categories-title">Browse by Categories</div>
+        <div class="categories-list">
+            <div class="category-item">
+                <div class="icon">&#128187;</div>
+                <div class="count">320</div>
+                <div class="label">Web design</div>
+            </div>
+            <div class="category-item">
+                <div class="icon">&#128200;</div>
+                <div class="count">180</div>
+                <div class="label">Marketing</div>
+            </div>
+            <div class="category-item">
+                <div class="icon">&#127909;</div>
+                <div class="count">340</div>
+                <div class="label">Video</div>
+            </div>
+            <div class="category-item">
+                <div class="icon">&#128187;</div>
+                <div class="count">140</div>
+                <div class="label">Websites</div>
+            </div>
+            <div class="category-item">
+                <div class="icon">&#128101;</div>
+                <div class="count">84</div>
+                <div class="label">Customer Support</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

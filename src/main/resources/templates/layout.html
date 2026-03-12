@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - TGDD">TGDD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="https://thegioididong.com/favicon.ico" type="image/x-icon">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', Arial, sans-serif; background: #b10007 url('https://cdnv2.tgdd.vn/webmwg/2024/ContentMwg/images/lunar_new_year/2026/TGDD/bg-main.png') fixed 100%; min-height: 100vh; }
+
+        /* HEADER */
+        .tgdd-header { background: #ffd400; box-shadow: 0 2px 8px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 300; }
+        .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 12px; padding: 8px 12px; }
+        .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .logo span { font-size: 20px; font-weight: 800; color: #d0021c; }
+        .header-loc { font-size: 12px; color: #000; text-decoration: none; line-height: 1.3; padding: 4px 10px; border-radius: 4px; white-space: nowrap; }
+        .header-loc:hover { background: rgba(0,0,0,0.08); }
+        .header-loc b { display: block; font-size: 13px; }
+        .search-box { flex: 1; max-width: 420px; }
+        .search-box input { width: 100%; padding: 9px 15px; border-radius: 20px; border: none; font-size: 13px; outline: none; }
+        .hd-nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+        .hd-nav a { display: flex; flex-direction: column; align-items: center; color: #000; text-decoration: none; font-size: 11px; padding: 5px 10px; border-radius: 4px; }
+        .hd-nav a:hover { background: rgba(0,0,0,0.08); }
+        .hdiv { border-left: 1px solid #e9d100; height: 32px; margin: 0 4px; }
+
+        /* NAVBAR */
+        .tgdd-nav { background: #d0021c; position: sticky; top: 52px; z-index: 200; }
+        .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: stretch; padding: 0 12px; }
+        .nav-spacer { flex: 1; }
+        .nav-item { position: relative; display: flex; align-items: center; }
+        .nav-item > a {
+            color: #fff; text-decoration: none; font-size: 13px; font-weight: 500;
+            padding: 9px 12px; white-space: nowrap; transition: background 0.2s;
+            display: flex; align-items: center; gap: 5px; border-radius: 4px;
+        }
+        .nav-item > a:hover, .nav-item > a.active { background: rgba(255,255,255,0.18); }
+        .nav-arrow { font-size: 9px; opacity: 0.8; }
+
+        /* Admin actions on right */
+        .nav-admin { display: flex; align-items: stretch; border-left: 1px solid rgba(255,255,255,0.2); margin-left: 4px; padding-left: 4px; }
+
+        /* MEGA DROPDOWN */
+        .mega-dd {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            min-width: 300px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+            z-index: 9999;
+            border-top: 3px solid #d0021c;
+            padding-bottom: 10px;
+        }
+
+        /* Header of mega dropdown */
+        .mega-dd-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 16px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 6px;
+            text-decoration: none;
+            color: #d0021c;
+            transition: background 0.15s;
+        }
+        .mega-dd-header:hover { background: #fff5f5; }
+        .mega-dd-header-icon { font-size: 22px; }
+        .mega-dd-header-text { font-size: 14px; font-weight: 700; }
+        .mega-dd-header-sub { font-size: 11px; color: #98a2b3; font-weight: 400; margin-left: auto; }
+
+        /* Grid of children */
+        .mega-dd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            padding: 4px 8px;
+        }
+        .mega-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            color: #333;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .mega-item:hover { background: #fff5f5; color: #d0021c; }
+        .mega-item-icon {
+            font-size: 20px;
+            width: 36px; height: 36px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .mega-item:hover .mega-item-icon { background: #ffeeee; }
+        .mega-item-name { font-size: 12px; line-height: 1.35; }
+
+        /* Simple dropdown (for admin menu) */
+        .dd-menu {
+            display: none; position: absolute; top: 100%; right: 0;
+            background: #fff; min-width: 200px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+            z-index: 9999; border-top: 3px solid #d0021c;
+        }
+        .dd-menu a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 16px; color: #333 !important; background: #fff !important;
+            text-decoration: none; font-size: 13px; font-weight: 500;
+            transition: background 0.15s, color 0.15s;
+        }
+        .dd-menu a:hover { background: #fff5f5 !important; color: #d0021c !important; }
+        .dd-icon { font-size: 16px; width: 22px; flex-shrink: 0; text-align: center; }
+        .dd-divider { height: 1px; background: #f0f0f0; margin: 3px 0; }
+
+        /* FOOTER */
+        footer { background: #1a1a1a; color: #888; text-align: center; padding: 14px; font-size: 12px; margin-top: 40px; }
+        footer a { color: #ffd400; text-decoration: none; }
+    </style>
+
+    <th:block layout:fragment="head"></th:block>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="tgdd-header">
+    <div class="header-inner">
+        <a th:href="@{/product}" class="logo">
+            <img src="https://thegioididong.com/favicon.ico" width="28" alt="" onerror="this.style.display='none'">
+            <span>TGDD</span>
+        </a>
+        <a href="#" class="header-loc">
+            <span>Xem gia tai:</span>
+            <b>Ho Chi Minh &#9660;</b>
+        </a>
+        <div class="search-box">
+            <input type="text" placeholder="Tim kiem san pham...">
+        </div>
+        <nav class="hd-nav">
+            <a href="#"><span>&#128203;</span><span>Don hang</span></a>
+            <a href="#"><span>&#128722;</span><span>Gio hang</span></a>
+            <div class="hdiv"></div>
+            <a href="#"><span>&#128100;</span><b>Dang nhap</b></a>
+        </nav>
+    </div>
+</header>
+
+<!-- NAVBAR: DANH MUC CHA + ADMIN -->
+<nav class="tgdd-nav">
+    <div class="nav-inner">
+
+        <!-- Tat ca san pham -->
+        <div class="nav-item">
+            <a th:href="@{/product}">&#128241; Tat ca</a>
+        </div>
+
+        <!-- Danh muc cha - hien dong, hover hien subcategory -->
+        <div class="nav-item" th:each="rootCat : ${categories}" th:if="${rootCat.parent == null}">
+            <a th:href="@{/product}">
+                <span th:text="${rootCat.icon != null and !rootCat.icon.isEmpty() ? rootCat.icon : '📦'}">📦</span>
+                <span th:text="${rootCat.name}">Danh muc</span>
+                <span class="nav-arrow" th:if="${not #lists.isEmpty(rootCat.children)}">&#9660;</span>
+            </a>
+
+            <!-- Mega dropdown chi hien neu co subcategory -->
+            <div class="mega-dd" th:if="${not #lists.isEmpty(rootCat.children)}">
+                <!-- Header: link den tat ca san pham cua danh muc nay -->
+                <a th:href="@{/product}" class="mega-dd-header">
+                    <span class="mega-dd-header-icon"
+                          th:text="${rootCat.icon != null and !rootCat.icon.isEmpty() ? rootCat.icon : '📦'}">📦</span>
+                    <span class="mega-dd-header-text" th:text="'Tat ca ' + ${rootCat.name}">Tat ca</span>
+                    <span class="mega-dd-header-sub"
+                          th:text="${#lists.size(rootCat.children)} + ' danh muc'">0 danh muc</span>
+                </a>
+                <!-- Grid cac subcategory -->
+                <div class="mega-dd-grid">
+                    <a th:each="child : ${rootCat.children}"
+                       th:href="@{/product}"
+                       class="mega-item">
+                        <span class="mega-item-icon"
+                              th:text="${child.icon != null and !child.icon.isEmpty() ? child.icon : '📦'}">📦</span>
+                        <span class="mega-item-name" th:text="${child.name}">Sub</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spacer day admin sang phai -->
+        <div class="nav-spacer"></div>
+
+        <!-- Admin: Quan ly danh muc + Them san pham -->
+        <div class="nav-admin">
+            <div class="nav-item">
+                <a th:href="@{/categories}">&#128193; Danh muc &#9660;</a>
+                <div class="dd-menu">
+                    <a th:href="@{/categories}"><span class="dd-icon">&#128204;</span> Quan ly danh muc</a>
+                    <div class="dd-divider"></div>
+                    <a th:href="@{/categories/create}"><span class="dd-icon">&#43;</span> Them danh muc moi</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/product/create}">&#43; Them san pham</a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<section layout:fragment="content">
+    <!-- Noi dung trang con chen vao day -->
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>&#169; 2026 <a href="#">The Gioi Di Dong</a> &ndash; He thong quan ly noi bo</p>
+</footer>
+
+<script>
+    document.querySelectorAll('.nav-item').forEach(item => {
+        const menu = item.querySelector('.mega-dd, .dd-menu');
+        if (!menu) return;
+        item.addEventListener('mouseenter', () => menu.style.display = 'block');
+        item.addEventListener('mouseleave', () => menu.style.display = 'none');
+    });
+</script>
+
+<th:block layout:fragment="scripts"></th:block>
+
+</body>
+</html>
